@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.prototype.dao.MainDao">
+  
+  <select id="findFirst10AllBySelectLikeBoardSearchOrderBySeqDesc" resultMap="kr.co.prototype.dao.BoardDao.boardDto">
+    SELECT
+      <include refid="kr.co.prototype.dao.BoardDao.BoardColumns">
+        <property name="alias" value="TB." />
+        <property name="prefix" value="" />
+      </include>,
+      <include refid="kr.co.prototype.dao.FileDao.FileColumns">
+        <property name="alias" value="TBF." />
+        <property name="prefix" value="TBF_" />
+      </include>,
+      ROW_NUMBER() OVER (ORDER BY TB.seq) AS numbering
+    FROM
+      tb_board AS TB
+    LEFT OUTER JOIN
+      TB_file AS TBF
+    ON
+      TB.board_file_seq = TBF.seq
+      
+    <where>
+      <if test="board.boardSearch != null">
+        <choose>
+          <when test="board.select == 'subject'">
+            subject LIKE '%${board.boardSearch}%'
+          </when>
+          <otherwise>
+            uid LIKE '%${board.boardSearch}%'
+          </otherwise>
+        </choose>
+      </if>
+    </where>
+      
+    ORDER BY
+      TB.seq DESC
+    LIMIT
+      #{page.pageSize} offset #{page.startPageNo};
+  </select>
+
+  <select id="countBySelectLikeBoardSearch" resultType="int">
+    SELECT
+      COUNT(*)
+    FROM
+      TB_board
+    <where>
+      <if test="select != null">
+        ${select} LIKE '%${boardSearch}%';
+      </if>
+    </where>
+  </select>
+  
+</mapper>

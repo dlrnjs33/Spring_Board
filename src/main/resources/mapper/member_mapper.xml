@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.prototype.dao.MemberDao">
+  
+  <sql id="MemberColumns">
+    ${alias}seq      AS ${prefix}seq,
+    ${alias}uid      AS ${prefix}uid,
+    ${alias}password AS ${prefix}password,
+    ${alias}name     AS ${prefix}name,
+    ${alias}gender   AS ${prefix}gender,
+    ${alias}hp       AS ${prefix}hp,
+    ${alias}email    AS ${prefix}email,
+    ${alias}addr1    AS ${prefix}addr1,
+    ${alias}addr2    AS ${prefix}addr2,
+    ${alias}regdate  AS ${prefix}regdate
+  </sql>
+  
+  <select id="findByUidAndPassword" resultType="kr.co.prototype.domain.vo.MemberVo">
+    SELECT
+      <include refid="MemberColumns">
+        <property name="alias" value="" />
+        <property name="prefix" value="" />
+      </include>
+    FROM
+      TB_member
+    WHERE
+      uid=#{uid} AND password=#{password};
+  </select>
+  
+  <select id="countByUid" parameterType="String" resultType="int">
+  	SELECT
+  	  COUNT(*)
+  	FROM
+  	  TB_member
+  	WHERE
+      uid = #{uid};
+  </select>
+  
+  <insert id="save">
+    INSERT INTO TB_member(
+      uid, password, name, gender, hp, email, addr1, addr2, regdate
+    ) VALUES (
+      #{uid}, #{password}, #{name}, #{gender}, #{hp}, #{email}, #{addr1}, #{addr2}, NOW());
+  </insert>
+  
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  
+  <!-- consoleAppender -->
+  <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{yy-MM-dd HH:mm} / %5p / [%c] / %L Line / %m%n"</pattern>
+    </encoder>
+  </appender>
+  
+  <!-- fileAppender -->
+  <appender name="filelog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>C:/Users/owner/Documents/prototype-become-developer/data/%d{yyyy-MM-dd}/logfile_%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+      <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+        <maxFileSize>10MB</maxFileSize>
+      </timeBasedFileNamingAndTriggeringPolicy>
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%d{yy-MM-dd HH:mm} / %5p / [%c] / %L Line / %m%n"</pattern>
+    </encoder>
+  </appender>
+  
+  <!-- Application Loggers -->
+  <logger name="kr.co.prototype" additivity="false">
+      <level value="debug" />
+      <appender-ref ref="filelog"/>
+      <appender-ref ref="console" />
+  </logger>
+  
+  <!-- Query Loggers -->
+  <logger name="jdbc.sqlonly" additivity="false">
+    <level value="INFO" />
+    <appender-ref ref="filelog"/>
+    <appender-ref ref="console" />
+  </logger>
+  
+  <logger name="jdbc.resultsettable" additivity="false">
+    <level value="INFO" />
+    <appender-ref ref="filelog"/>
+    <appender-ref ref="console" />
+  </logger>
+  
+  <!-- Root Logger -->
+  <root>
+    <priority value="off" />
+    <appender-ref ref="console" />
+  </root>
+  
+</configuration>

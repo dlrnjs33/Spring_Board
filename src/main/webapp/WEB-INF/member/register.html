@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8" />
+
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/prototype-become-developer/js/register-check.js?ver=2"></script>
+
+<title>index</title>
+</head>
+
+<div th:insert="~{index :: header}"></div>
+
+<body>
+	<form action="/prototype-become-developer/member/register" style="margin-top: 50px" method="post">
+		<table border="1">
+			<tr>
+				<th>아이디</th>
+				<td>
+					<input type="text" name="uid" id="uid" placeholder="아이디 입력" />
+				</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>
+					<input type="button" id="idCheck" value="아이디 중복체크" />
+				</td>
+			</tr>
+			<tr>
+				<th>비밀번호</th>
+				<td>
+					<input type="password" name="password" id="password" placeholder="비밀번호 입력" />
+				</td>
+			</tr>
+			<tr>
+				<th>비밀번호 확인</th>
+				<td>
+					<input type="password" name="password2" id="password2" placeholder="비밀번호 입력" />
+				</td>
+			</tr>
+			<tr>
+				<th>이름</th>
+				<td>
+					<input type="text" name="name" id="name" placeholder="이름 입력" />
+				</td>
+			</tr>
+			<tr>
+				<th>성별</th>
+				<td>
+					<input type="radio" name="gender" value="1" checked>&nbsp;남</input>
+					<input type="radio" name="gender" value="2" >&nbsp;여</input>
+				</td>
+			</tr>
+			<tr>
+				<th>전화번호</th>
+				<td>
+					<input type="text" name="hp" id="hp" placeholder="전화번호 입력" />
+				</td>
+			</tr>
+			<tr>
+				<th>이메일</th>
+				<td>
+					<input type="text" name="email" id="email" placeholder="이메일 입력" />
+				</td>
+			</tr>
+			<tr>
+				<th>주소</th>
+				<td>
+					<input type="text" name="addr1" placeholder="주소1 입력" />
+				</td>
+			</tr>
+			<tr>
+				<th>상세주소</th>
+				<td>
+					<input type="text" name="addr2" placeholder="주소2 입력" />
+				</td>
+			</tr>
+		</table>
+		<input type="submit" id="register" value="가입하기" />
+	</form>
+</body>
+</html>

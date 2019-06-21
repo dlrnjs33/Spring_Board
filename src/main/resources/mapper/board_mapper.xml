@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.prototype.dao.BoardDao">
+  
+  <sql id="BoardColumns">
+    ${alias}seq            AS ${prefix}seq,
+    ${alias}subject        AS ${prefix}subject,
+    ${alias}contents       AS ${prefix}contents,
+    ${alias}uid            AS ${prefix}uid,
+    ${alias}regdate        AS ${prefix}regdate,
+    ${alias}update_date    AS ${prefix}update_date,
+    ${alias}board_file_seq AS ${prefix}board_file_seq
+  </sql>
+  
+  <resultMap id="boardVo" type="kr.co.prototype.domain.vo.BoardVo">
+    <id column="seq" property="seq" />
+    <result column="subject" property="subject" />
+    <result column="contents" property="contents" />
+    <result column="uid" property="uid" />
+    <result column="regdate" property="regdate" />
+    <result column="update_date" property="updateDate" />
+    <result column="board_file_seq" property="boardFileSeq" />
+  </resultMap>
+  
+  <resultMap id="boardDto" type="kr.co.prototype.domain.BoardDto" extends="kr.co.prototype.dao.BoardDao.boardVo" autoMapping="true">
+    <association property="fileVo" resultMap="kr.co.prototype.dao.FileDao.fileVo" />
+  </resultMap>
+  
+  <select id="findBySeqAndBoardFileSeq" resultMap="boardDto">
+    SELECT
+      <include refid="BoardColumns">
+        <property name="alias" value="TB." />
+        <property name="prefix" value="" />
+      </include>,
+      <include refid="kr.co.prototype.dao.FileDao.FileColumns">
+        <property name="alias" value="TBF." />
+        <property name="prefix" value="TBF_" />
+      </include>,
+      ROUND(file_size/1024, 1) AS kbSize,
+      TBF.seq AS fileSeq
+    FROM
+      tb_board AS TB
+    LEFT OUTER JOIN
+      TB_file AS TBF
+    ON
+      TB.board_file_seq = TBF.seq
+    WHERE
+      <choose>
+        <when test="boardFileSeq == null">
+          TB.seq = #{seq}
+        </when>
+        <otherwise>
+          TB.seq = #{seq} AND TBF.seq = #{boardFileSeq};
+        </otherwise>
+      </choose>
+  </select>
+  
+  <select id="existsBySeqAndUid" resultType="int">
+    SELECT
+      COUNT(*)
+    FROM
+      TB_board
+    WHERE
+      <choose>
+        <when test="uid == null">
+          seq = #{seq};    
+        </when>
+        <otherwise>
+          seq = #{seq} AND uid = #{uid};
+        </otherwise>
+      </choose>
+  </select>
+  
+  <insert id="save">
+    INSERT INTO TB_board(
+      subject, contents, uid, board_file_seq, regdate
+    ) VALUES (
+      #{subject}, #{contents}, #{uid}, #{boardFileSeq}, NOW());
+  </insert>
+
+  <update id="updateBySeqAndUid">
+    UPDATE
+      TB_board
+    SET
+      subject = #{subject},
+      contents = #{contents},
+      update_date = NOW()
+    WHERE
+      seq = #{seq} AND uid = #{uid};
+  </update>
+  
+  <update id="updateBySeq">
+    UPDATE
+      TB_board
+    SET
+      board_file_seq = null
+    WHERE
+      seq = #{seq};
+  </update>
+
+  <delete id="deleteBySeqAndUid">
+    DELETE
+    FROM
+      TB_board
+    WHERE
+      seq = #{seq} AND uid = #{uid};
+  </delete>
+  
+</mapper>

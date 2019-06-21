@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/prototype-become-developer/js/write-check.js"></script>
+<script src="/prototype-become-developer/js/board-delete.js"></script>
+<script src="/prototype-become-developer/js/file-delete.js"></script>
+<script src="/prototype-become-developer/js/board-modify.js?ver=6"></script>
+
+<title>boardWrite</title>
+</head>
+
+<div th:insert="~{index :: header}"></div>
+
+<body>
+	<th:block th:obejct="${board}" th:with="create=*{seq == 'new'}">
+	
+	<!-- 폼 -->
+	<!-- 작성하기 -->
+	<span th:if="${create}">
+		<form th:action="@{'/board/0?uid=' + ${session.member.uid}}" method="post" enctype="multipart/form-data">
+	</span>
+	<!-- 수정하기 -->
+	<span th:if="${create == false and modify != null}">
+		<form id="form" th:attr="data-seq=${board.seq}, data-board-file-seq=${board.boardFileSeq}">
+	</span>
+	<!-- 폼 -->
+
+		<table border="1">
+			<tr height="30">
+				<td width="50" style="text-align: center"><label>제목</label></td>
+				
+				<!-- 제목 -->
+				<!-- 작성하기 -->
+				<td width="550" th:if="${create}">
+					<input type="text" id="subject" name="subject" maxlength="100" style="width: 100%" placeholder="제목 입력" />
+				</td>
+				
+				<!-- 상세보기 -->
+				<td width="550" th:if="${create == false and modify == null}" th:text="${board.subject}"><strong>제목20</strong></td>
+				
+				<!-- 수정하기 -->
+				<td width="550" th:if="${create == false and modify != null}">
+					<input type="text" style="width: 100%" id="subject" name="subject" th:value="${board.subject}" maxlength="20" required />
+				</td>
+				
+				<!-- 제목 -->
+				
+				<!-- 아이디 -->
+				<!-- 작성하기, 수정하기 -->
+				<td width="50" style="text-align: center"><label>아이디</label></td>
+				<td width="150" th:if="${create or modify != null}">
+					<input type="text" name="uid" id="uid" style="width: 100%" th:value="${session.member.uid}" readonly />
+				</td>
+				
+				<!-- 상세보기 -->
+				<td width="150" style="text-align: center" th:if="${create == false and modify == null}" th:text="${board.uid}"><strong>dlrnjs1</strong></td>
+				<!-- 아이디 -->
+				
+			</tr>
+			<tr>
+			
+				<!-- 내용 -->
+				<!-- 작성하기 -->
+				<td width="800" height="600" colspan="4" th:if="${create}">
+					<textarea id="contents" name="contents" style="width: 100%" rows="40" placeholder="내용 입력"></textarea>
+				</td>
+				
+				<!-- 상세보기 -->
+				<td width="800" height="700" colspan="4" th:if="${create == false and modify == null}" th:utext="${#strings.replace(board.contents, T(System).getProperty('line.separator'), '&lt;br /&gt;')}" >내용20</td>
+				
+				<!-- 수정하기 -->
+				<td width="800" height="600" colspan="4" th:if="${create == false and modify != null}">
+					<textarea name="contents" id="contents" maxlength="3000" style="width: 100%" rows="40" required th:text="${board.contents}">파일내용2</textarea>
+				</td>
+				
+				<!-- 내용 -->
+				
+			</tr>
+			
+			<!-- 첨부파일  -->
+			<span th:unless="${create}">
+				<tr id="file" th:each="file : ${board.fileVo}">
+					<td width="100" height="30" style="text-align: center">첨부파일</td>
+					<td width="600" height="30" colspan="3" th:attr="data-file-name=${file.originalFileName}, data-file-size=${file.fileSize}">
+						<a th:href="@{'/board/{seq}/download?seq=' + ${file.seq}}" th:text=${file.originalFileName}>이미지2.PNG</a>
+						
+						<span th:if="${modify != null}" th:attr="data-seq=${board.seq}, data-board-file-seq=${board.boardFileSeq}">
+				            <input type="button" id="fileDelete" value="첨부파일 삭제" size="200"/>
+				        </span>
+						
+						<span th:text="|( ${file.fileSize}kb )|">( 28kb )</span>
+					</td>
+				</tr>
+			</span>
+			<!-- 첨부파일  -->
+			
+		</table>
+		
+		<!-- 버튼 -->
+		<!-- 작성하기 -->
+		<span th:if="${create}">
+			<input type="file" id= "file" name="file" accept="image/gif, image/jpeg, image/png, image/jpg" />
+			<br><br>
+			<input type="submit" id="write" value="작성완료" size="200" />
+		</span>
+		
+		<!-- 상세 보기 -->
+		<span th:if="${session.member}">
+			<span th:if="${create == false and modify == null}">
+				<span th:if="${session.member.uid} == ${board.uid}">
+					<input type="button" value="수정하기" size="200" th:onclick="|javascript:location.href='@{/board/{seq}(seq=*{seq}, baordFileSeq=*{boardFileSeq}, modify=modify, pageNo=${page.pageNo})}'|" />
+					<span id="deleteData" th:attr="data-seq=${board.seq}, data-board-file-seq=${board.boardFileSeq==null} ? 0 : ${board.boardFileSeq}, data-uid=${session.member.uid}">
+						<input type="button" id="delete" value="삭제하기" size="200" />
+				  	</span>
+				</span>
+			</span>
+		</span>
+		
+		<!-- 수정하기 -->
+		<span th:if="${modify != null}">
+			<input type="button" id="modify" value="수정완료" size="200" />
+		</span>
+		
+		<input type="button" value="글 목록" size="200" th:onclick="|javascript:location.href='@{/(pageNo=${page.pageNo})}'|"/>
+		<!-- 버튼 -->
+
+	<!-- 폼 -->
+	<span th:if="${create or modify != null}">
+		</form>
+	</span>
+	<!-- 폼 -->
+	
+	</th:block>
+</body>
+</html>

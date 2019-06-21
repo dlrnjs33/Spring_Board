@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.prototype.dao.FileDao">
+  
+  <sql id="FileColumns">
+    ${alias}seq                AS ${prefix}seq,
+    ${alias}original_file_name AS ${prefix}original_file_name,
+    ${alias}stored_file_name   AS ${prefix}stored_file_name,
+    ${alias}file_size          AS ${prefix}file_size
+  </sql>
+  
+  <resultMap id="fileVo" type="kr.co.prototype.domain.vo.FileVo">
+    <id column="TBF_seq" property="seq" />
+    <result column="TBF_original_file_name" property="originalFileName" />
+    <result column="TBF_stored_file_name" property="storedFileName" />
+    <result column="TBF_file_size" property="fileSize" />
+    <result column="kbSize" property="fileSize" />
+  </resultMap>
+  
+  <insert id="save">
+   <selectKey resultType="int" keyProperty="seq" order="AFTER">
+      SELECT
+        MAX(seq)
+      FROM
+        TB_file;
+    </selectKey>
+    INSERT INTO
+      TB_file(original_file_name, stored_file_name, file_size
+    ) VALUES (
+      #{originalFileName}, #{storedFileName}, #{fileSize});
+  </insert>
+  
+  <delete id="deleteBySeq">
+    DELETE
+    FROM
+      TB_file
+    WHERE
+      seq = #{seq};
+  </delete>
+  
+  <select id="findBySeq" resultMap="fileVo">
+    SELECT
+      <include refid="FileColumns">
+        <property name="alias" value=""/>
+        <property name="prefix" value="TBF_"/>
+      </include>
+    FROM
+      TB_file
+    WHERE
+      seq = #{seq};
+  </select>
+  
+</mapper>
